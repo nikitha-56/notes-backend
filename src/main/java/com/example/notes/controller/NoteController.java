@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
+@CrossOrigin(origins = "https://notes-frontend-1gie.vercel.app")
 @RestController
 @RequestMapping("/api/notes")
 public class NoteController {
