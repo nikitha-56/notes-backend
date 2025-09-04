@@ -11,8 +11,12 @@ public class CorsConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                        .allowedOrigins("https://notes-frontend-3cdj.vercel.app")
-                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS");
+                        .allowedOrigins(
+                            "https://notes-frontend-7blq.vercel.app", // your frontend URL
+                            "http://localhost:3000" // optional: for local testing
+                        )
+                        .allowedMethods("GET", "POST", "PUT", "DELETE")
+                        .allowedHeaders("*");
             }
         };
     }
