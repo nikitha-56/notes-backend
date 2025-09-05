@@ -17,20 +17,32 @@ public class UserService {
     private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     public String register(User user, String confirmPassword) {
-        if (repo.existsByEmail(user.getEmail())) return "Email already exists";
-        if (repo.existsByUsername(user.getUsername())) return "Username already exists";
-        if (!user.getPassword().equals(confirmPassword)) return "Passwords do not match";
+        try {
+            if (repo.existsByEmail(user.getEmail())) return "Email already exists";
+            if (repo.existsByUsername(user.getUsername())) return "Username already exists";
+            if (!user.getPassword().equals(confirmPassword)) return "Passwords do not match";
 
-        user.setPassword(encoder.encode(user.getPassword()));
-        repo.save(user);
-        return "success";
+            user.setPassword(encoder.encode(user.getPassword()));
+            repo.save(user);
+            return "success";
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Error during registration: " + e.getMessage());
+            return "Registration failed due to server error";
+        }
     }
 
     public User login(String email, String password) {
-        Optional<User> opt = repo.findByEmail(email);
-        if (opt.isEmpty()) return null;
-        User user = opt.get();
-        if (encoder.matches(password, user.getPassword())) return user;
-        return null;
+        try {
+            Optional<User> opt = repo.findByEmail(email);
+            if (opt.isEmpty()) return null;
+            User user = opt.get();
+            if (encoder.matches(password, user.getPassword())) return user;
+            return null;
+        } catch (Exception e) {
+            // Log the exception
+            System.err.println("Error during login: " + e.getMessage());
+            return null;
+        }
     }
 }
