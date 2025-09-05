@@ -19,6 +19,11 @@ public class AuthController {
         this.userService = userService;
     }
 
+    @GetMapping("/test")
+    public ResponseEntity<String> test() {
+        return ResponseEntity.ok("Auth API is working");
+    }
+
     @PostMapping("/register")
     public ResponseEntity<?> registerUser(@RequestBody User user) {
         Optional<User> existingUser = userService.findByEmail(user.getEmail());
