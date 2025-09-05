@@ -2,6 +2,8 @@ package com.example.notes.service;
 
 import com.example.notes.model.User;
 import com.example.notes.repository.UserRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -9,23 +11,26 @@ import java.util.Optional;
 @Service
 public class UserService {
 
-    private final UserRepository userRepository;
+    @Autowired
+    private UserRepository repo;
 
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    private BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+
+    public String register(User user, String confirmPassword) {
+        if (repo.existsByEmail(user.getEmail())) return "Email already exists";
+        if (repo.existsByUsername(user.getUsername())) return "Username already exists";
+        if (!user.getPassword().equals(confirmPassword)) return "Passwords do not match";
+
+        user.setPassword(encoder.encode(user.getPassword()));
+        repo.save(user);
+        return "success";
     }
 
-    public User registerUser(User user) {
-        // For simplicity, store password as plain text (not recommended for production)
-        return userRepository.save(user);
-    }
-
-    public Optional<User> findByEmail(String email) {
-        return userRepository.findByEmail(email);
-    }
-
-    public boolean checkPassword(String rawPassword, String storedPassword) {
-        // Simple plain text password check (not recommended for production)
-        return rawPassword.equals(storedPassword);
+    public User login(String email, String password) {
+        Optional<User> opt = repo.findByEmail(email);
+        if (opt.isEmpty()) return null;
+        User user = opt.get();
+        if (encoder.matches(password, user.getPassword())) return user;
+        return null;
     }
 }
