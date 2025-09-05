@@ -34,7 +34,7 @@ public class SecurityConfig {
                 registry.addMapping("/**")
                         .allowedOrigins(
                             "http://localhost:3000",
-                            "https://notes-frontend.vercel.app"
+                           "https://notes-frontend-lizr.vercel.app"
                         )
                         .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
                         .allowCredentials(true);
