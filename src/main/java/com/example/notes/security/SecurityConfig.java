@@ -2,26 +2,27 @@ package com.example.notes.security;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
-@EnableWebSecurity
 public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
         http
-            .csrf(csrf -> csrf.disable())
-            .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/notes/share/**").permitAll()  // public share links
-                .requestMatchers("/api/auth/**").permitAll()         // allow login/register without auth
-                .requestMatchers("/api/notes/**").authenticated()    // protect CRUD endpoints
-            )
-            .httpBasic(httpBasic -> {});  // still keeps basic auth for /api/notes
+            .csrf().disable()
+            .cors()
+            .and()
+            .authorizeHttpRequests()
+            .requestMatchers("/api/auth/**").permitAll()    // open for register/login
+            .requestMatchers("/api/notes/share/**").permitAll()
+            .anyRequest().permitAll()                       // allow all for now
+            .and()
+            .httpBasic().disable();                         // disable HTTP Basic auth for now
+
         return http.build();
     }
 
@@ -31,12 +32,12 @@ public class SecurityConfig {
             @Override
             public void addCorsMappings(CorsRegistry registry) {
                 registry.addMapping("/**")
-                    .allowedOrigins(
-                        "http://localhost:3000",
-                        "https://notes-frontend.vercel.app"
-                    )
-                    .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
-                    .allowCredentials(true);
+                        .allowedOrigins(
+                            "http://localhost:3000",
+                            "https://notes-frontend.vercel.app"
+                        )
+                        .allowedMethods("GET","POST","PUT","DELETE","OPTIONS")
+                        .allowCredentials(true);
             }
         };
     }
